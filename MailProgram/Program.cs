@@ -16,8 +16,7 @@ namespace MailProgram
 
             //LoadUserFile();
             FirstMenyOption();
-            FirstMenyOption();
-
+            
         }
 
         // Denna metod är till för att skapa en användare och sätta ett lösen till den.
@@ -43,33 +42,27 @@ namespace MailProgram
             while ((rad = infil.ReadLine()) != null)
             {
 
-                Console.WriteLine("Hello!!! World");
-                Console.WriteLine("Working?");
-                Console.WriteLine("Working?");
+                
             }
+        }
 
             // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
             static void FirstMenyOption()
             {
-
-
-
                 Console.WriteLine("Välj alternativ");
 
                 Console.WriteLine("\t1 : Skapa användare:");
                 Console.WriteLine("\t2 : Välj användare:");
-                Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
+                Console.WriteLine("\t3 : Avsluta program och spara:");
                 int menyval = int.Parse(Console.ReadLine());
-
-
 
                 if (menyval == 1)
                 {
-                    Console.WriteLine("Skapa användare");
+                    Console.WriteLine("Skapa användare: ");
                 }
                 if (menyval == 2)
                 {
-                    Console.WriteLine("Välj användare");
+                    Console.WriteLine("Välj användare: ");
                 }
                 if (menyval == 3)
                 {
@@ -86,6 +79,7 @@ namespace MailProgram
             //This code will cancel the program.
             static void EndProgram()
             {
+             
 
 
             }
@@ -109,7 +103,7 @@ namespace MailProgram
 
 
             }
-        }
+        
     }
 
 }
