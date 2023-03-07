@@ -9,7 +9,7 @@ namespace MailProgram
 
     class Program
     {
-       static string[] messages;
+        static string[] messages;
 
         static void Main(string[] args)
         {
@@ -43,36 +43,112 @@ namespace MailProgram
             while ((rad = infil.ReadLine()) != null)
             {
 
-                Console.WriteLine("Hello!!! World");
-                Console.WriteLine("Working?");
-                Console.WriteLine("Working?");
+
             }
         }
 
-            // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
-            static void FirstMenyOption()
+        // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
+        static void FirstMenyOption()
+        {
+
+
+
+            Console.WriteLine("Välj alternativ");
+
+            Console.WriteLine("\t1 : Skapa användare:");
+            Console.WriteLine("\t2 : Välj användare:");
+            Console.WriteLine("\t3 : Avsluta program och spara:");
+            int menyval = int.Parse(Console.ReadLine());
+
+
+
+            if (menyval == 1)
             {
-                Console.WriteLine("Välj alternativ");
+                Console.WriteLine("Skapa användare");
+            }
+            if (menyval == 2)
+            {
+                //Console.WriteLine("Välj användare");
+                SecondMenyOption();
+            }
+            if (menyval == 3)
+            {
+                Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
+                string inmatning = Console.ReadLine().ToUpper();
 
-                Console.WriteLine("\t1 : Skapa användare:");
-                Console.WriteLine("\t2 : Välj användare:");
-                Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
-                int menyval = int.Parse(Console.ReadLine());
-
-
-
-                if (menyval == 1)
+                if (inmatning == "J")
                 {
-                    Console.WriteLine("Skapa användare");
+                    //endprogram metod
                 }
-                if (menyval == 2)
+            }
+        }
+
+        static void SecondMenyOption()
+        {
+
+
+
+            Console.WriteLine("Välj alternativ");
+
+            Console.WriteLine("\t1 : Skriv meddelande:");
+            Console.WriteLine("\t2 : Inkorg");
+            Console.WriteLine("\t3 : Ta bort användare");
+            Console.WriteLine("\t4 : Avsluta program och spara");
+            int menyval = int.Parse(Console.ReadLine());
+
+
+
+            if (menyval == 1)
+            {
+                Console.WriteLine("Skriv meddelande");
+            }
+            if (menyval == 2)
+            {
+                ThirdMenyOption();
+            }
+            if (menyval == 3)
+            {
+                Console.WriteLine("Ta bort användare");
+            }
+            if (menyval == 4)
+            {
+                Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
+                string inmatning = Console.ReadLine().ToUpper();
+
+                if (inmatning == "J")
                 {
-                    Console.WriteLine("Välj användare");
+                    //endprogram metod
                 }
-                if (menyval == 3)
-                {
-                    Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
-                    string inmatning = Console.ReadLine().ToUpper();
+            }
+        }
+
+        static void ThirdMenyOption()
+        {
+
+
+
+            Console.WriteLine("Välj alternativ");
+
+            Console.WriteLine("\t1 : Läs meddelande:");
+            Console.WriteLine("\t2 : Ta bort meddelanden");
+            Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
+
+            int menyval = int.Parse(Console.ReadLine());
+
+
+
+            if (menyval == 1)
+            {
+                fourthMenyOption();
+            }
+            if (menyval == 2)
+            {
+                Console.WriteLine("Meddelandet är raderat!");
+            }
+            if (menyval == 3)
+            {
+                Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
+                string inmatning = Console.ReadLine().ToUpper();
 
                 if (inmatning == "J")
                 {
@@ -91,7 +167,7 @@ namespace MailProgram
 
             Console.WriteLine("\t1 : Skriv meddelande:");
             Console.WriteLine("\t2 : Tillbaka till inkorg");
-            
+
 
             int menyval = int.Parse(Console.ReadLine());
 
@@ -105,40 +181,39 @@ namespace MailProgram
             {
                 ThirdMenyOption();
             }
-           
+
         }
 
 
         //This code will cancel the program.
         static void EndProgram()
-            {
-             
+        {
 
 
-            }
-            //
-            static void ChoiceUser()
-            {
-
-            }
-
-
-            //This method check if the input password belongs to the username 
-            static void ValidationOfPassword()
-            {
-
-
-            }
-            //This method check if the input password belongs to the username 
-            static void WriteMessage()
-            {
-
-
-
-            }
         }
+        //
+        static void ChoiceUser()
+        {
+
+        }
+
+
+        //This method check if the input password belongs to the username 
+        static void ValidationOfPassword()
+        {
+
+
+        }
+        //This method check if the input password belongs to the username 
+        static void WriteMessage()
+        {
+
+
+
+        }
+
     }
-   
+
 }
 
 
