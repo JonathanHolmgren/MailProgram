@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
-
 
 namespace MailProgram
 {
@@ -11,19 +11,25 @@ namespace MailProgram
     {
         public string användarnamn;
         public string lösenord;
-        //public int id;
+    }
+
+    public class Meddelande
+    {
+        public string användarnamn;
+        public string mottagare;
+        public string rubrik;
+        public DateTime datum;
+        public string meddelande;
     }
 
     class Program
     {
-        static Konto[] konton = new Konto[0];
+        public static string Inloggingsanvändarnamn;
 
         static void Main(string[] args)
         {
-            //LoadUserFile();
-            //ValidationOfPassword();
             StartSida();
-            //FirstMenyOption();
+            FirstMenyOption();
         }
 
         static void SparaAnvändareUppgifter()
@@ -48,22 +54,13 @@ namespace MailProgram
         // Denna metod är till för att skapa en användare och sätta ett lösen till den.
         static Konto CreateUser()
         {
-            // 1. Skapa en metod som kör SkapaAnvändare. Detta är huvudprogramet som ska köra allt.
-            // 2. Skapa en metod som skriver ut "Välj ut användare och lösenord.
-            // 3.
-            // * Programet ska kunna fråga användare vad deras användare ska vara och lösenord.
-            // * Programet ska kunna jämföra om om användare och lösenord matchar vad som redan finns i  "user.txt. filen.
-            // * Om det redan finns användare med det programmet måste en text med "Upptaget" skrivas ut.
-            // * Om användare inte finns med i text filen så ska användare skapas (läggas till i filen).
-            // *
-
             Konto nyttKonto = new Konto();
 
             Console.WriteLine("Välj ett användarnamn och ett lösenord");
             Console.Write("Användarnamn: ");
             string användarnamn = Console.ReadLine();
-            Console.Write("Lösenord: ");
-            string lösenord = Console.ReadLine();
+            string textpåskärm = "Lösenord: ";
+            string lösenord = Skrivlösenord(textpåskärm);
 
             nyttKonto.användarnamn = användarnamn;
             nyttKonto.lösenord = lösenord;
@@ -158,7 +155,6 @@ namespace MailProgram
             }
             else
             {
-                //Console.WriteLine("Felaktigt val, försök igen.22");
                 FirstMenyOption();
             }
         }
@@ -171,29 +167,42 @@ namespace MailProgram
             Console.WriteLine("\t2 : Inkorg");
             Console.WriteLine("\t3 : Ta bort användare");
             Console.WriteLine("\t4 : Avsluta program och spara");
-            int menyval = int.Parse(Console.ReadLine());
+            string menyval = Console.ReadLine();
 
-            if (menyval == 1)
+            if (menyval == "1")
             {
                 Console.WriteLine("Skriv meddelande");
             }
-            if (menyval == 2)
+            if (menyval == "2")
             {
                 ThirdMenyOption();
             }
-            if (menyval == 3)
+            if (menyval == "3")
             {
                 Console.WriteLine("Ta bort användare");
-            }
-            if (menyval == 4)
-            {
-                Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
-                string inmatning = Console.ReadLine().ToUpper();
+                //string användare = "1";
+                //Konto[] gamlaKontolista = HämtaGamlaListan();
+                //string x = "1";
+                int index = SökIndexPåAnvändare(Inloggingsanvändarnamn);
+                Konto[] nylista = TaBortAnvändareFrånLista(index);
+                //Console.WriteLine(index);
 
-                if (inmatning == "J")
+                StreamWriter utfil = new StreamWriter("user.txt"); // skapa fil eller öppna om den finns
+
+                foreach (Konto konto in nylista)
                 {
-                    //endprogram metod
+                    utfil.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
                 }
+                /* foreach (Konto konto in nylista)
+                 {
+                     Console.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
+                 }*/
+
+                utfil.Close(); // Stänger fil
+            }
+            if (menyval == "4")
+            {
+                AvslutaProgram();
             }
         }
 
@@ -205,25 +214,19 @@ namespace MailProgram
             Console.WriteLine("\t2 : Ta bort meddelanden");
             Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
 
-            int menyval = int.Parse(Console.ReadLine());
+            string menyval = Console.ReadLine();
 
-            if (menyval == 1)
+            if (menyval == "1")
             {
                 fourthMenyOption();
             }
-            if (menyval == 2)
+            if (menyval == "2")
             {
                 Console.WriteLine("Meddelandet är raderat!");
             }
-            if (menyval == 3)
+            if (menyval == "3")
             {
-                Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
-                string inmatning = Console.ReadLine().ToUpper();
-
-                if (inmatning == "J")
-                {
-                    //endprogram metod
-                }
+                AvslutaProgram();
             }
         }
 
@@ -234,13 +237,13 @@ namespace MailProgram
             Console.WriteLine("\t1 : Skriv meddelande:");
             Console.WriteLine("\t2 : Tillbaka till inkorg");
 
-            int menyval = int.Parse(Console.ReadLine());
+            string menyval = Console.ReadLine();
 
-            if (menyval == 1)
+            if (menyval == "1")
             {
                 Console.WriteLine("Läs meddelanden");
             }
-            if (menyval == 2)
+            if (menyval == "2")
             {
                 ThirdMenyOption();
             }
@@ -273,47 +276,15 @@ namespace MailProgram
         {
             Console.WriteLine("____Logga in____" + "\n");
             Console.Write("Användarnamn: ");
-            string användarnamn = Console.ReadLine();
+            Inloggingsanvändarnamn = Console.ReadLine();
             Console.Write("Lösenord: ");
             string lösenord = Console.ReadLine();
 
             string[] inloggningsuppgifter = new string[2];
-            inloggningsuppgifter[0] = användarnamn;
+            inloggningsuppgifter[0] = Inloggingsanvändarnamn;
             inloggningsuppgifter[1] = lösenord;
 
-            //return inloggningsuppgifter;
-
-            //bool inlogging = ValidationOfPassword(inloggningsuppgifter);
-
-            Matchaanvändarnamn(användarnamn, lösenord);
-
-            /*
-            if (inlogging == true) {
-                Console.WriteLine("korrekt");
-            }
-            else if(inlogging == false)
-            {
-                Console.WriteLine("Fel användarnamn eller lösenord");
-            }*/
-
-            //Console.WriteLine("Tryck valfri knapp för att gå vidare");
-            //Console.ReadKey();
-        }
-
-        //This method check if the input password belongs to the username
-        static bool ValidationOfPassword(string[] inloggninsuppgifter)
-        {
-            string användarnamn = inloggninsuppgifter[0];
-            string lösenord = inloggninsuppgifter[1];
-
-            if (användarnamn == "Jonte" && lösenord == "1234")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            Matchaanvändarnamn(Inloggingsanvändarnamn, lösenord);
         }
 
         static void Matchaanvändarnamn(string användarnamn, string lösenord)
@@ -328,41 +299,27 @@ namespace MailProgram
             for (int i = 0; i < rader.Length; i++)
             {
                 //
-                string[] values = rader[i].Split('\t');
+                string[] värde = rader[i].Split('\t');
 
                 //
                 Konto konto = new Konto();
-                konto.användarnamn = values[0];
-                konto.lösenord = values[1];
+                konto.användarnamn = värde[0];
+                konto.lösenord = värde[1];
 
                 //
                 lista[i] = konto;
             }
 
-            Konto[] matchalista = lista;
-
-            bool ok = Kollaanvändare(matchalista, användarnamn, lösenord);
+            bool ok = Kollaanvändare(lista, användarnamn, lösenord);
 
             if (ok == true)
             {
-                Console.WriteLine("Användarnamn finns listan");
+                SecondMenyOption();
             }
             else if (ok == false)
             {
                 Console.WriteLine("Användarnamn finns inte listan");
             }
-
-            //
-            /* for (int i = 0; i < lista.Length; i++)
-             {
-                 Console.Write(lista[i].användarnamn + " ");
-                 Console.WriteLine(lista[i].lösenord);
-             }*/
-
-
-
-
-            //}
         }
 
         static bool Kollaanvändare(Konto[] lista, string användarnamn, string lösenord)
@@ -376,7 +333,6 @@ namespace MailProgram
                 {
                     x = true;
                     break;
-                    //Console.WriteLine("Användarnamn finns listan");
                 }
             }
             return x;
@@ -385,29 +341,133 @@ namespace MailProgram
             static void WriteMessage() { }
         }
 
-        static void StartSida() {
+        static int SökIndexPåAnvändare(string användare)
+        {
+            string[] rader = File.ReadAllLines("user.txt");
 
-            Console.WriteLine(@"
+            string[] lista = new string[rader.Length];
 
+            for (int i = 0; i < rader.Length; i++)
+            {
+                string[] värde = rader[i].Split('\t');
 
- __    __     ______     __     __         ______   ______     ______     ______     ______     ______     __    __    
-/\ ""-./  \   /\  __ \   /\ \   /\ \       /\  == \ /\  == \   /\  __ \   /\  ___\   /\  == \   /\  __ \   /\ ""-./  \   
-\ \ \-./\ \  \ \  __ \  \ \ \  \ \ \____  \ \  _-/ \ \  __<   \ \ \/\ \  \ \ \__ \  \ \  __<   \ \  __ \  \ \ \-./\ \  
- \ \_\ \ \_\  \ \_\ \_\  \ \_\  \ \_____\  \ \_\    \ \_\ \_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \_\ \ \_\ 
-  \/_/  \/_/   \/_/\/_/   \/_/   \/_____/   \/_/     \/_/ /_/   \/_____/   \/_____/   \/_/ /_/   \/_/\/_/   \/_/  \/_/ 
-                                                                                                                       
-");
-            //Console.ReadKey();
-        
+                string användarnamn = värde[0];
+
+                lista[i] = användarnamn;
+            }
+
+            int index = Array.IndexOf(lista, användare);
+
+            return index;
         }
 
+        static Konto[] TaBortAnvändareFrånLista(int index)
+        {
+            string[] rader = File.ReadAllLines("user.txt");
 
-       
+            Konto[] nyLista = new Konto[rader.Length - 1];
 
+            for (int i = 0; i < index; i++)
+            {
+                string[] värde = rader[i].Split('\t');
+                Konto konto = new Konto();
+                konto.användarnamn = värde[0];
+                konto.lösenord = värde[1];
+                nyLista[i] = konto;
+            }
+            for (int i = index + 1; i < rader.Length; i++)
+            {
+                string[] värde = rader[i].Split('\t');
+                Konto konto = new Konto();
+                konto.användarnamn = värde[0];
+                konto.lösenord = värde[1];
+                nyLista[i - 1] = konto;
+            }
+
+            return nyLista;
+        }
+
+        static void StartSida()
+        {
+            Console.WriteLine(
+                @"███╗   ███╗ █████╗ ██╗██╗     ██████╗ ██████╗  ██████╗  ██████╗ ██████╗  █████╗ ███╗   ███╗
+████╗ ████║██╔══██╗██║██║     ██╔══██╗██╔══██╗██╔═══██╗██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
+██╔████╔██║███████║██║██║     ██████╔╝██████╔╝██║   ██║██║  ███╗██████╔╝███████║██╔████╔██║
+██║╚██╔╝██║██╔══██║██║██║     ██╔═══╝ ██╔══██╗██║   ██║██║   ██║██╔══██╗██╔══██║██║╚██╔╝██║
+██║ ╚═╝ ██║██║  ██║██║███████╗██║     ██║  ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██║ ╚═╝ ██║
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝
+                                                                                           "
+            );
+            Console.WriteLine(
+                @"              _
+             | |
+             | |===( )   //////
+             |_|   |||  | o o|
+                    ||| ( c  )                  ____
+                     ||| \= /                  ||   \_
+                      ||||||                   ||     |
+                      ||||||                ...||__/|-""
+                      ||||||             __|________|__
+                        |||             |______________|
+                        |||             || ||      || ||
+                        |||             || ||      || ||
+------------------------|||-------------||-||------||-||-------
+                        |__>            || ||      || ||
+
+
+     hit any key to continue"
+            );
+
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        static string Skrivlösenord(string textpåskräm)
+        {
+            string valtlösenord = "";
+            try
+            {
+                Console.Write(textpåskräm);
+                valtlösenord = "";
+                do
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    // Backspace Should Not Work
+                    if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+                    {
+                        valtlösenord += key.KeyChar;
+                        Console.Write("*");
+                    }
+                    else
+                    {
+                        if (key.Key == ConsoleKey.Backspace && valtlösenord.Length > 0)
+                        {
+                            valtlösenord = valtlösenord.Substring(0, (valtlösenord.Length - 1));
+                            Console.Write("\b \b");
+                        }
+                        else if (key.Key == ConsoleKey.Enter)
+                        {
+                            if (string.IsNullOrWhiteSpace(valtlösenord))
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine("Fältet kan ej vara tomt!");
+                                Skrivlösenord(textpåskräm);
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("");
+                                break;
+                            }
+                        }
+                    }
+                } while (true);
+                return valtlösenord;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
-
-
 }
-
-
-
