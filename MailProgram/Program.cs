@@ -23,7 +23,7 @@ namespace MailProgram
             //LoadUserFile();
             //ValidationOfPassword();
             StartSida();
-            //FirstMenyOption();
+            FirstMenyOption();
         }
 
         static void SparaAnvändareUppgifter()
