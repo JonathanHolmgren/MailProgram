@@ -1,93 +1,171 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
-
 
 namespace MailProgram
 {
-
+    public class Konto
+    {
+        public string användarnamn;
+        public string lösenord;
+        public int id;
+    }
 
     class Program
     {
-       static string[] messages;
+        static Konto[] konton = new Konto[0];
 
         static void Main(string[] args)
         {
-
             //LoadUserFile();
-            FirstMenyOption();
 
+            FirstMenyOption();
+        }
+
+        static void SparaAnvändareUppgifter()
+        {
+            Konto nyttkonto = CreateUser();
+            Konto[] gamlaKontoLista = HämtaGamlaListan();
+            Konto[] nyaAnvändarkonton = LäggAnvändareUppgifterVektor(gamlaKontoLista, nyttkonto);
+
+            StreamWriter utfil = new StreamWriter("user.txt", true); // skapa fil eller öppna om den finns
+
+            foreach (Konto konto in nyaAnvändarkonton)
+            {
+                utfil.WriteLine(konto.användarnamn + "¨\t" + konto.lösenord);
+            }
+            utfil.Close(); // Stänger fil
+
+            Console.Clear();
+            Console.WriteLine("Ditt Konto har nu skapats.");
+            Console.ReadKey();
 
         }
 
+
+
         // Denna metod är till för att skapa en användare och sätta ett lösen till den.
-        static void CreateUser()
+        static Konto CreateUser()
         {
             // 1. Skapa en metod som kör SkapaAnvändare. Detta är huvudprogramet som ska köra allt.
             // 2. Skapa en metod som skriver ut "Välj ut användare och lösenord.
             // 3.
-
             // * Programet ska kunna fråga användare vad deras användare ska vara och lösenord.
             // * Programet ska kunna jämföra om om användare och lösenord matchar vad som redan finns i  "user.txt. filen.
             // * Om det redan finns användare med det programmet måste en text med "Upptaget" skrivas ut.
             // * Om användare inte finns med i text filen så ska användare skapas (läggas till i filen).
-            // * 
+            // *
 
+            Konto nyttKonto = new Konto();
+
+            Console.WriteLine("Välj ett användarnamn och ett lösenord");
+            Console.Write("Användarnamn: ");
+            string användarnamn = Console.ReadLine();
+            Console.Write("Lösenord: ");
+            string lösenord = Console.ReadLine();
+
+            nyttKonto.användarnamn = användarnamn;
+            nyttKonto.lösenord = lösenord;
+
+            return nyttKonto;
         }
 
-        static void LoadUserFile()
+        public static Konto[] LäggAnvändareUppgifterVektor(
+            Konto[] gamlaAnvändarkonton,
+            Konto nyttKonto
+        )
+        {
+            Konto[] nyaAnvändarkonton = new Konto[gamlaAnvändarkonton.Length + 1];
+
+            for (int i = 0; i < gamlaAnvändarkonton.Length; i++)
+            {
+                nyaAnvändarkonton[i] = gamlaAnvändarkonton[i];
+            }
+
+            nyaAnvändarkonton[gamlaAnvändarkonton.Length] = nyttKonto;
+
+            return nyaAnvändarkonton;
+        }
+
+        static StreamReader LoadUserFile()
         {
             StreamReader infil = new StreamReader("user.txt", Encoding.GetEncoding(28591));
 
+            return infil;
+        }
+
+        static Konto[] HämtaGamlaListan()
+        {
+            if (!File.Exists("user.txt"))
+            {
+                return new Konto[0]; // Returnera en tom lista om filen inte finns
+            }
+
+            StreamReader infil = LoadUserFile();
+
+            int antalRader = File.ReadLines("user.txt").Count();
+            Konto[] gamlaKontoLista = new Konto[antalRader];
+
             string rad;
+            int index = 0;
             while ((rad = infil.ReadLine()) != null)
             {
+                string[] delar = rad.Split(',');
+                if (delar.Length == 2)
+                {
+                    Konto konto = new Konto();
+                    konto.användarnamn = delar[0];
+                    konto.lösenord = delar[1];
+                    gamlaKontoLista[index] = konto;
+                    index++;
+                }
+            }
+            infil.Close();
 
+            // Om inga konton hittades i filen, returnera en tom lista istället för null
+            if (index == 0)
+            {
+                return new Konto[0];
+            }
 
+            return gamlaKontoLista;
+        }
+
+        // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
+        static void FirstMenyOption()
+        {
+            Console.WriteLine("Välj alternativ");
+
+            Console.WriteLine("\t1 : Skapa användare:");
+            Console.WriteLine("\t2 : Logga in:");
+            Console.WriteLine("\t3 : Avsluta program och spara:");
+            string menyval = Console.ReadLine();
+
+            if (menyval == "1")
+            {
+                SparaAnvändareUppgifter();
+                Console.Clear();
+                FirstMenyOption();
+            }
+            if (menyval == "2")
+            {
+                LoggaIn();
+
+            }
+            if (menyval == "3")
+            {
+                AvslutaProgram();
+            }
+            else {
+                Console.WriteLine("Felaktigt val, försök igen.");
+                FirstMenyOption();
             }
         }
 
-            // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
-            static void FirstMenyOption()
-            {
-
-
-
-                Console.WriteLine("Välj alternativ");
-
-                Console.WriteLine("\t1 : Skapa användare:");
-                Console.WriteLine("\t2 : Välj användare:");
-                Console.WriteLine("\t3 : Avsluta program och spara:");
-                int menyval = int.Parse(Console.ReadLine());
-
-
-
-                if (menyval == 1)
-                {
-                    Console.WriteLine("Skapa användare");
-                }
-                if (menyval == 2)
-                {
-                    //Console.WriteLine("Välj användare");
-                    SecondMenyOption();
-                }
-                if (menyval == 3)
-                {
-                    Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
-                    string inmatning = Console.ReadLine().ToUpper();
-
-                    if (inmatning == "J")
-                    {
-                        //endprogram metod
-                    }
-                }
-            }
-
         static void SecondMenyOption()
         {
-
-
-
             Console.WriteLine("Välj alternativ");
 
             Console.WriteLine("\t1 : Skriv meddelande:");
@@ -95,8 +173,6 @@ namespace MailProgram
             Console.WriteLine("\t3 : Ta bort användare");
             Console.WriteLine("\t4 : Avsluta program och spara");
             int menyval = int.Parse(Console.ReadLine());
-
-
 
             if (menyval == 1)
             {
@@ -124,18 +200,13 @@ namespace MailProgram
 
         static void ThirdMenyOption()
         {
-
-
-
             Console.WriteLine("Välj alternativ");
 
             Console.WriteLine("\t1 : Läs meddelande:");
             Console.WriteLine("\t2 : Ta bort meddelanden");
             Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
-          
+
             int menyval = int.Parse(Console.ReadLine());
-
-
 
             if (menyval == 1)
             {
@@ -155,23 +226,16 @@ namespace MailProgram
                     //endprogram metod
                 }
             }
-
         }
 
         static void fourthMenyOption()
         {
-
-
-
             Console.WriteLine("Välj alternativ");
 
             Console.WriteLine("\t1 : Skriv meddelande:");
             Console.WriteLine("\t2 : Tillbaka till inkorg");
-            
 
             int menyval = int.Parse(Console.ReadLine());
-
-
 
             if (menyval == 1)
             {
@@ -181,39 +245,48 @@ namespace MailProgram
             {
                 ThirdMenyOption();
             }
-           
         }
 
-
         //This code will cancel the program.
-        static void EndProgram()
+        static void AvslutaProgram()
+        {
+            Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
+            Console.WriteLine("J för avsluta och N för att komma till huvudmenyn.");
+            string inmatning = Console.ReadLine().ToUpper();
+
+            if (inmatning == "J")
             {
-
-
+                Environment.Exit(0);
             }
-            //
-            static void ChoiceUser()
+            else if (inmatning == "N")
             {
-
+                FirstMenyOption();
             }
-
-
-            //This method check if the input password belongs to the username 
-            static void ValidationOfPassword()
+            else
             {
-
-
+                Console.WriteLine("Felaktigt Svar! Försök igen");
+                AvslutaProgram();
             }
-            //This method check if the input password belongs to the username 
-            static void WriteMessage()
-            {
+        }
+
+        //
+        static void LoggaIn() {
+
+            Console.WriteLine("____Logga in____" + "\n");
+            Console.Write("Användarnamn: ");
+            string användarnamn = Console.ReadLine();
+            Console.Write("Lösenord: ");
+            string Lösenord = Console.ReadLine();
+            Console.WriteLine("Tryck valfri knapp för att gå vidare");
+            Console.ReadKey();
 
 
+        }
 
-            }
-     
+        //This method check if the input password belongs to the username
+        static void ValidationOfPassword() { }
+
+        //This method check if the input password belongs to the username
+        static void WriteMessage() { }
     }
-   
 }
-
-
