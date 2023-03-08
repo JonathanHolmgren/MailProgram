@@ -4,13 +4,14 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 
+
 namespace MailProgram
 {
     public class Konto
     {
         public string användarnamn;
         public string lösenord;
-        public int id;
+        //public int id;
     }
 
     class Program
@@ -20,8 +21,9 @@ namespace MailProgram
         static void Main(string[] args)
         {
             //LoadUserFile();
-
-            FirstMenyOption();
+            //ValidationOfPassword();
+            StartSida();
+            //FirstMenyOption();
         }
 
         static void SparaAnvändareUppgifter()
@@ -34,17 +36,14 @@ namespace MailProgram
 
             foreach (Konto konto in nyaAnvändarkonton)
             {
-                utfil.WriteLine(konto.användarnamn + "¨\t" + konto.lösenord);
+                utfil.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
             }
             utfil.Close(); // Stänger fil
 
             Console.Clear();
             Console.WriteLine("Ditt Konto har nu skapats.");
             Console.ReadKey();
-
         }
-
-
 
         // Denna metod är till för att skapa en användare och sätta ett lösen till den.
         static Konto CreateUser()
@@ -152,14 +151,14 @@ namespace MailProgram
             if (menyval == "2")
             {
                 LoggaIn();
-
             }
             if (menyval == "3")
             {
                 AvslutaProgram();
             }
-            else {
-                Console.WriteLine("Felaktigt val, försök igen.");
+            else
+            {
+                //Console.WriteLine("Felaktigt val, försök igen.22");
                 FirstMenyOption();
             }
         }
@@ -270,23 +269,145 @@ namespace MailProgram
         }
 
         //
-        static void LoggaIn() {
-
+        static void LoggaIn()
+        {
             Console.WriteLine("____Logga in____" + "\n");
             Console.Write("Användarnamn: ");
             string användarnamn = Console.ReadLine();
             Console.Write("Lösenord: ");
-            string Lösenord = Console.ReadLine();
-            Console.WriteLine("Tryck valfri knapp för att gå vidare");
-            Console.ReadKey();
+            string lösenord = Console.ReadLine();
 
+            string[] inloggningsuppgifter = new string[2];
+            inloggningsuppgifter[0] = användarnamn;
+            inloggningsuppgifter[1] = lösenord;
 
+            //return inloggningsuppgifter;
+
+            //bool inlogging = ValidationOfPassword(inloggningsuppgifter);
+
+            Matchaanvändarnamn(användarnamn, lösenord);
+
+            /*
+            if (inlogging == true) {
+                Console.WriteLine("korrekt");
+            }
+            else if(inlogging == false)
+            {
+                Console.WriteLine("Fel användarnamn eller lösenord");
+            }*/
+
+            //Console.WriteLine("Tryck valfri knapp för att gå vidare");
+            //Console.ReadKey();
         }
 
         //This method check if the input password belongs to the username
-        static void ValidationOfPassword() { }
+        static bool ValidationOfPassword(string[] inloggninsuppgifter)
+        {
+            string användarnamn = inloggninsuppgifter[0];
+            string lösenord = inloggninsuppgifter[1];
 
-        //This method check if the input password belongs to the username
-        static void WriteMessage() { }
+            if (användarnamn == "Jonte" && lösenord == "1234")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static void Matchaanvändarnamn(string användarnamn, string lösenord)
+        {
+            //
+            string[] rader = File.ReadAllLines("user.txt");
+
+            //
+            Konto[] lista = new Konto[rader.Length];
+
+            //
+            for (int i = 0; i < rader.Length; i++)
+            {
+                //
+                string[] values = rader[i].Split('\t');
+
+                //
+                Konto konto = new Konto();
+                konto.användarnamn = values[0];
+                konto.lösenord = values[1];
+
+                //
+                lista[i] = konto;
+            }
+
+            Konto[] matchalista = lista;
+
+            bool ok = Kollaanvändare(matchalista, användarnamn, lösenord);
+
+            if (ok == true)
+            {
+                Console.WriteLine("Användarnamn finns listan");
+            }
+            else if (ok == false)
+            {
+                Console.WriteLine("Användarnamn finns inte listan");
+            }
+
+            //
+            /* for (int i = 0; i < lista.Length; i++)
+             {
+                 Console.Write(lista[i].användarnamn + " ");
+                 Console.WriteLine(lista[i].lösenord);
+             }*/
+
+
+
+
+            //}
+        }
+
+        static bool Kollaanvändare(Konto[] lista, string användarnamn, string lösenord)
+        {
+            bool x = false;
+
+            for (int i = 0; i < lista.Length; i++)
+            {
+                // if (lista[i].användarnamn == användarnamn)
+                if (lista[i].användarnamn == användarnamn && lista[i].lösenord == lösenord)
+                {
+                    x = true;
+                    break;
+                    //Console.WriteLine("Användarnamn finns listan");
+                }
+            }
+            return x;
+
+            //This method check if the input password belongs to the username
+            static void WriteMessage() { }
+        }
+
+        static void StartSida() {
+
+            Console.WriteLine(@"
+
+
+ __    __     ______     __     __         ______   ______     ______     ______     ______     ______     __    __    
+/\ ""-./  \   /\  __ \   /\ \   /\ \       /\  == \ /\  == \   /\  __ \   /\  ___\   /\  == \   /\  __ \   /\ ""-./  \   
+\ \ \-./\ \  \ \  __ \  \ \ \  \ \ \____  \ \  _-/ \ \  __<   \ \ \/\ \  \ \ \__ \  \ \  __<   \ \  __ \  \ \ \-./\ \  
+ \ \_\ \ \_\  \ \_\ \_\  \ \_\  \ \_____\  \ \_\    \ \_\ \_\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \_\ \ \_\ 
+  \/_/  \/_/   \/_/\/_/   \/_/   \/_____/   \/_/     \/_/ /_/   \/_____/   \/_____/   \/_/ /_/   \/_/\/_/   \/_/  \/_/ 
+                                                                                                                       
+");
+            //Console.ReadKey();
+        
+        }
+
+
+       
+
     }
+
+
 }
+
+
+
