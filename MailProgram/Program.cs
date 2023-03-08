@@ -184,7 +184,6 @@ namespace MailProgram
 
         }
 
-
         //This code will cancel the program.
         static void EndProgram()
         {
