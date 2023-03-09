@@ -21,15 +21,20 @@ namespace MailProgram
         public DateTime datum;
         public string meddelande;
     }
+ 
 
     class Program
     {
         public static string Inloggingsanvändarnamn;
 
+
+
         static void Main(string[] args)
         {
             StartSida();
             FirstMenyOption();
+           
+
         }
 
         static void SparaAnvändareUppgifter()
@@ -88,6 +93,12 @@ namespace MailProgram
         static StreamReader LoadUserFile()
         {
             StreamReader infil = new StreamReader("user.txt", Encoding.GetEncoding(28591));
+
+            return infil;
+        }
+        static StreamReader LoadmessagesFile()
+        {
+            StreamReader infil = new StreamReader("meddelande.txt", Encoding.GetEncoding(28591));
 
             return infil;
         }
@@ -161,8 +172,10 @@ namespace MailProgram
 
         static void SecondMenyOption()
         {
-            Console.WriteLine("Välj alternativ");
-
+            Console.Clear();
+            Console.WriteLine("Välkommen {0} ", Inloggingsanvändarnamn);
+            Console.WriteLine("Välj alternativ ");
+           
             Console.WriteLine("\t1 : Skriv meddelande:");
             Console.WriteLine("\t2 : Inkorg");
             Console.WriteLine("\t3 : Ta bort användare");
@@ -172,6 +185,9 @@ namespace MailProgram
             if (menyval == "1")
             {
                 Console.WriteLine("Skriv meddelande");
+                SparaMeddelande();
+                Console.Clear();
+                SecondMenyOption();
             }
             if (menyval == "2")
             {
@@ -180,6 +196,7 @@ namespace MailProgram
             if (menyval == "3")
             {
                 Console.WriteLine("Ta bort användare");
+                
                 //string användare = "1";
                 //Konto[] gamlaKontolista = HämtaGamlaListan();
                 //string x = "1";
@@ -386,6 +403,131 @@ namespace MailProgram
 
             return nyLista;
         }
+        
+        static void SparaMeddelande()
+        {
+            Meddelande nyttMeddelande = SkapaMeddelande();
+            Meddelande[] gamlaMeddelandeLista = HämtaGamlaMListan();
+            Meddelande[] nyameddelanden = LäggMeddelandeVektor(gamlaMeddelandeLista, nyttMeddelande);
+
+            StreamWriter utfil = new StreamWriter("meddelande.txt"); // skapa fil eller öppna om den finns
+
+            foreach (Meddelande meddelande in nyameddelanden)
+            {
+                utfil.WriteLine(meddelande.användarnamn + "\t" + meddelande.mottagare + "\t" + meddelande.rubrik + "\t" + meddelande.datum + "\t" + meddelande.meddelande);
+            }
+
+
+            utfil.Close(); // Stänger fil
+
+            Console.Clear();
+            Console.WriteLine("Ditt Meddelande har nu Skickats.");
+            Console.ReadKey();
+        }
+
+        // Denna metod är till för att skapa en användare och sätta ett lösen till den.
+        static Meddelande SkapaMeddelande()
+        {
+            Meddelande nyttMeddelande = new Meddelande();
+
+            Console.WriteLine("Skriv ett meddelande");
+            
+            Console.Write("Avsändare:{0} ", Inloggingsanvändarnamn);
+            
+            Console.Write("Mottagare: ");
+            string mottagare = Console.ReadLine();
+            
+            Console.Write("Rubrik: ");
+            string rubrik = Console.ReadLine();
+           
+            DateTime datum = DateTime.Now;
+
+            Console.WriteLine("Meddelande: ");
+            string meddelande = Console.ReadLine();
+
+
+            nyttMeddelande.användarnamn = Inloggingsanvändarnamn;
+            nyttMeddelande.mottagare = mottagare;
+            nyttMeddelande.rubrik = rubrik;
+            nyttMeddelande.datum = datum;
+            nyttMeddelande.meddelande = meddelande;
+
+
+            return nyttMeddelande;
+        }
+
+        static Meddelande[] HämtaGamlaMListan()
+        {
+            if (!File.Exists("meddelande.txt"))
+            {
+                return new Meddelande[0]; // Returnera en tom lista om filen inte finns
+            }
+
+            StreamReader infil = LoadmessagesFile();
+
+            int antalRader = File.ReadLines("meddelande.txt").Count();
+            Meddelande[] gamlaMeddelandeLista = new Meddelande[antalRader];
+
+              int index = 0;
+              string rad;
+
+
+            // Denna tror jag man inte behöver
+              while ((rad = infil.ReadLine()) != null)
+              {
+                  string[] delar = rad.Split(',');
+                  if (delar.Length == 5)
+                  {
+                      Meddelande meddelande = new Meddelande();
+                      meddelande.användarnamn = delar[0]; 
+                      meddelande.mottagare = delar[1];
+                      meddelande.rubrik = delar[2];
+                      meddelande.datum = delar[3];
+                      meddelande.meddelande = delar[4];
+
+                      gamlaMeddelandeLista[index] = meddelande;
+                      index++;
+                  }
+              }
+            infil.Close();
+
+            // Om inga konton hittades i filen, returnera en tom lista istället för null
+            if (index == 0)
+            {
+                return new Meddelande[0];
+            }
+
+            return gamlaMeddelandeLista;
+        }
+
+        public static Meddelande[] LäggMeddelandeVektor(
+                    Meddelande[] gamlaMeddelandeLista,
+                    Meddelande nyttMeddelande
+                )
+        {
+            
+            Meddelande[] nyameddelanden = new Meddelande[gamlaMeddelandeLista.Length + 1];
+
+            for (int i = 0; i < gamlaMeddelandeLista.Length; i++)
+            {
+                nyameddelanden[i] = gamlaMeddelandeLista[i];
+            }
+
+            nyameddelanden[gamlaMeddelandeLista.Length] = nyttMeddelande;
+
+            return nyameddelanden;
+        }
+        
+
+
+
+
+
+
+
+
+
+
 
         static void StartSida()
         {
