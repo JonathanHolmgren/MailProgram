@@ -322,7 +322,9 @@ namespace MailProgram
         //
         static void LoggaIn()
         {
-            Console.WriteLine("____Logga in____" + "\n");
+            Console.WriteLine("+-+-+-+-+-");
+            Console.WriteLine("Logga in: ");
+            Console.WriteLine("+-+-+-+-+-");
             Console.Write("Användarnamn: ");
             Inloggingsanvändarnamn = Console.ReadLine();
             Console.Write("Lösenord: ");
@@ -459,11 +461,11 @@ namespace MailProgram
         {
             Meddelande nyttMeddelande = new Meddelande();
 
-            Console.WriteLine("Skriv ett meddelande");
+            Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
+
+            Console.WriteLine("Från: {0} ", Inloggingsanvändarnamn);
             
-            Console.Write("Avsändare:{0} ", Inloggingsanvändarnamn);
-            
-            Console.Write("Mottagare: ");
+            Console.Write("Till: ");
             string mottagare = Console.ReadLine();
             
             Console.Write("Rubrik: ");
