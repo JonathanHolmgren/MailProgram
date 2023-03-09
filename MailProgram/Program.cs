@@ -28,9 +28,11 @@ namespace MailProgram
 
         static void Main(string[] args)
         {
+            
             StartSida();
             FirstMenyOption();
-        
+           
+
         }
 
         static void SparaAnvändareUppgifter()
@@ -99,31 +101,33 @@ namespace MailProgram
             return infil;
         }
 
-       public static void SkrivUtMeddelanden()
+        static void SkrivUtMeddelande()
         {
-            StreamReader infil = new StreamReader("meddelande.txt");
-            string rad = infil.ReadLine();
-            while ((rad != null))
+            Console.Clear();
+            string[] rader = File.ReadAllLines("meddelande.txt");
+
+            Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
+            for (int i = 0; i < rader.Length; i++)
             {
-                string[] meddelande = rad.Split('\t');
+                string[] värde = rader[i].Split('\t');
 
-                /*object m = new object();
-                m = (meddelande[2]);
-                string med = m.ToString();
-                //LäggTillVektor(med);
-                Console.WriteLine(med);*/
+                string avsändare = värde[0];
+                string mottagare = värde[1];
+                string rubrik = värde[2];
+                string datum = värde[3];
 
-                Console.WriteLine("--------------------------");
-                Console.WriteLine(meddelande[0]);
-                Console.WriteLine(meddelande[2]); 
-                Console.WriteLine(meddelande[3]);
-                
-                rad = infil.ReadLine();
+                if (Inloggingsanvändarnamn == mottagare)
+                {
+                    Console.WriteLine("----------------------");
+                    Console.WriteLine("Avsändare: {0}", avsändare);
+                    Console.WriteLine("Rubrik: {0}", rubrik);
+                    Console.WriteLine(datum);                    
+                }          
+               
             }
-            Console.WriteLine("--------------------------");
-            infil.Close();
-
+            Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
         }
+  
         static Konto[] HämtaGamlaListan()
         {
             if (!File.Exists("user.txt"))
@@ -185,8 +189,9 @@ namespace MailProgram
             {
                 AvslutaProgram();
             }
-            else
+            if (menyval != "1" || menyval != "2" || menyval != "3")
             {
+                Console.WriteLine("Fel val. Försök igen!");
                 FirstMenyOption();
             }
         }
@@ -257,7 +262,10 @@ namespace MailProgram
             if (menyval == "1")
             {
                 //fourthMenyOption();
-                SkrivUtMeddelanden();
+                SkrivUtMeddelande();
+                Console.WriteLine("Tryck på valfri knapp för att gå vidare!");
+                Console.ReadKey();
+                SecondMenyOption();
             }
             if (menyval == "2")
             {
@@ -267,6 +275,7 @@ namespace MailProgram
             {
                 AvslutaProgram();
             }
+            
         }
 
         static void fourthMenyOption()
@@ -378,7 +387,7 @@ namespace MailProgram
             return x;
 
         }
-
+        
         static int SökIndexPåAnvändare(string användare)
         {
             string[] rader = File.ReadAllLines("user.txt");
