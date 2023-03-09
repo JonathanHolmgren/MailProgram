@@ -19,22 +19,18 @@ namespace MailProgram
         public string mottagare;
         public string rubrik;
         public DateTime datum;
-        public string meddelande;
+        public string text;
     }
  
-
     class Program
     {
         public static string Inloggingsanvändarnamn;
-
-
 
         static void Main(string[] args)
         {
             StartSida();
             FirstMenyOption();
-           
-
+        
         }
 
         static void SparaAnvändareUppgifter()
@@ -90,7 +86,7 @@ namespace MailProgram
             return nyaAnvändarkonton;
         }
 
-        static StreamReader LoadUserFile()
+        static StreamReader LaddaAnvändarFil()
         {
             StreamReader infil = new StreamReader("user.txt", Encoding.GetEncoding(28591));
 
@@ -103,6 +99,31 @@ namespace MailProgram
             return infil;
         }
 
+       public static void SkrivUtMeddelanden()
+        {
+            StreamReader infil = new StreamReader("meddelande.txt");
+            string rad = infil.ReadLine();
+            while ((rad != null))
+            {
+                string[] meddelande = rad.Split('\t');
+
+                /*object m = new object();
+                m = (meddelande[2]);
+                string med = m.ToString();
+                //LäggTillVektor(med);
+                Console.WriteLine(med);*/
+
+                Console.WriteLine("--------------------------");
+                Console.WriteLine(meddelande[0]);
+                Console.WriteLine(meddelande[2]); 
+                Console.WriteLine(meddelande[3]);
+                
+                rad = infil.ReadLine();
+            }
+            Console.WriteLine("--------------------------");
+            infil.Close();
+
+        }
         static Konto[] HämtaGamlaListan()
         {
             if (!File.Exists("user.txt"))
@@ -110,7 +131,7 @@ namespace MailProgram
                 return new Konto[0]; // Returnera en tom lista om filen inte finns
             }
 
-            StreamReader infil = LoadUserFile();
+            StreamReader infil = LaddaAnvändarFil();
 
             int antalRader = File.ReadLines("user.txt").Count();
             Konto[] gamlaKontoLista = new Konto[antalRader];
@@ -235,7 +256,8 @@ namespace MailProgram
 
             if (menyval == "1")
             {
-                fourthMenyOption();
+                //fourthMenyOption();
+                SkrivUtMeddelanden();
             }
             if (menyval == "2")
             {
@@ -339,6 +361,7 @@ namespace MailProgram
             }
         }
 
+        //This method check if the input password belongs to the username
         static bool Kollaanvändare(Konto[] lista, string användarnamn, string lösenord)
         {
             bool x = false;
@@ -354,8 +377,6 @@ namespace MailProgram
             }
             return x;
 
-            //This method check if the input password belongs to the username
-            static void WriteMessage() { }
         }
 
         static int SökIndexPåAnvändare(string användare)
@@ -410,13 +431,12 @@ namespace MailProgram
             Meddelande[] gamlaMeddelandeLista = HämtaGamlaMListan();
             Meddelande[] nyameddelanden = LäggMeddelandeVektor(gamlaMeddelandeLista, nyttMeddelande);
 
-            StreamWriter utfil = new StreamWriter("meddelande.txt"); // skapa fil eller öppna om den finns
+            StreamWriter utfil = new StreamWriter("meddelande.txt",true); // skapa fil eller öppna om den finns
 
             foreach (Meddelande meddelande in nyameddelanden)
             {
-                utfil.WriteLine(meddelande.användarnamn + "\t" + meddelande.mottagare + "\t" + meddelande.rubrik + "\t" + meddelande.datum + "\t" + meddelande.meddelande);
+                utfil.WriteLine(meddelande.användarnamn + "\t" + meddelande.mottagare + "\t" + meddelande.rubrik + "\t" + meddelande.datum + "\t" + meddelande.text);
             }
-
 
             utfil.Close(); // Stänger fil
 
@@ -443,15 +463,13 @@ namespace MailProgram
             DateTime datum = DateTime.Now;
 
             Console.WriteLine("Meddelande: ");
-            string meddelande = Console.ReadLine();
-
+            string text = Console.ReadLine();
 
             nyttMeddelande.användarnamn = Inloggingsanvändarnamn;
             nyttMeddelande.mottagare = mottagare;
             nyttMeddelande.rubrik = rubrik;
             nyttMeddelande.datum = datum;
-            nyttMeddelande.meddelande = meddelande;
-
+            nyttMeddelande.text = text;
 
             return nyttMeddelande;
         }
@@ -468,28 +486,8 @@ namespace MailProgram
             int antalRader = File.ReadLines("meddelande.txt").Count();
             Meddelande[] gamlaMeddelandeLista = new Meddelande[antalRader];
 
-              int index = 0;
+            int index = 0;
 
-
-
-            // Denna tror jag man inte behöver
-            /*  string rad;
-             while ((rad = infil.ReadLine()) != null)
-             {
-                 string[] delar = rad.Split(',');
-                 if (delar.Length == 5)
-                 {
-                     Meddelande meddelande = new Meddelande();
-                     meddelande.användarnamn = delar[0]; 
-                     meddelande.mottagare = delar[1];
-                     meddelande.rubrik = delar[2];
-                     meddelande.datum = delar[3];
-                     meddelande.meddelande = delar[4];
-
-                     gamlaMeddelandeLista[index] = meddelande;
-                     index++;
-                 }
-             }*/
             infil.Close();
 
             // Om inga Meddelande hittades i filen, returnera en tom lista istället för null
@@ -503,10 +501,8 @@ namespace MailProgram
 
         public static Meddelande[] LäggMeddelandeVektor(
                     Meddelande[] gamlaMeddelandeLista,
-                    Meddelande nyttMeddelande
-                )
+                    Meddelande nyttMeddelande)
         {
-            
             Meddelande[] nyameddelanden = new Meddelande[gamlaMeddelandeLista.Length + 1];
 
             for (int i = 0; i < gamlaMeddelandeLista.Length; i++)
@@ -518,18 +514,6 @@ namespace MailProgram
 
             return nyameddelanden;
         }
-        
-
-
-
-
-
-
-
-
-
-
-
         static void StartSida()
         {
             Console.WriteLine(
