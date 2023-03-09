@@ -21,17 +21,17 @@ namespace MailProgram
         public DateTime datum;
         public string text;
     }
- 
+
     class Program
     {
         public static string Inloggingsanvändarnamn;
 
         static void Main(string[] args)
         {
-            
+
             StartSida();
             FirstMenyOption();
-           
+            //SkrivUtSorteradeAnvändare();
 
         }
 
@@ -121,13 +121,13 @@ namespace MailProgram
                     Console.WriteLine("----------------------");
                     Console.WriteLine("Avsändare: {0}", avsändare);
                     Console.WriteLine("Rubrik: {0}", rubrik);
-                    Console.WriteLine(datum);                    
-                }          
-               
+                    Console.WriteLine(datum);
+                }
+
             }
             Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
         }
-  
+
         static Konto[] HämtaGamlaListan()
         {
             if (!File.Exists("user.txt"))
@@ -201,7 +201,7 @@ namespace MailProgram
             Console.Clear();
             Console.WriteLine("Välkommen {0} ", Inloggingsanvändarnamn);
             Console.WriteLine("Välj alternativ ");
-           
+
             Console.WriteLine("\t1 : Skriv meddelande:");
             Console.WriteLine("\t2 : Inkorg");
             Console.WriteLine("\t3 : Ta bort användare");
@@ -222,7 +222,7 @@ namespace MailProgram
             if (menyval == "3")
             {
                 Console.WriteLine("Ta bort användare");
-                
+
                 //string användare = "1";
                 //Konto[] gamlaKontolista = HämtaGamlaListan();
                 //string x = "1";
@@ -275,7 +275,7 @@ namespace MailProgram
             {
                 AvslutaProgram();
             }
-            
+
         }
 
         static void fourthMenyOption()
@@ -389,7 +389,7 @@ namespace MailProgram
             return x;
 
         }
-        
+
         static int SökIndexPåAnvändare(string användare)
         {
             string[] rader = File.ReadAllLines("user.txt");
@@ -435,14 +435,14 @@ namespace MailProgram
 
             return nyLista;
         }
-        
+
         static void SparaMeddelande()
         {
             Meddelande nyttMeddelande = SkapaMeddelande();
             Meddelande[] gamlaMeddelandeLista = HämtaGamlaMListan();
             Meddelande[] nyameddelanden = LäggMeddelandeVektor(gamlaMeddelandeLista, nyttMeddelande);
 
-            StreamWriter utfil = new StreamWriter("meddelande.txt",true); // skapa fil eller öppna om den finns
+            StreamWriter utfil = new StreamWriter("meddelande.txt", true); // skapa fil eller öppna om den finns
 
             foreach (Meddelande meddelande in nyameddelanden)
             {
@@ -460,21 +460,24 @@ namespace MailProgram
         static Meddelande SkapaMeddelande()
         {
             Meddelande nyttMeddelande = new Meddelande();
-
+            SkrivUtSorteradeAnvändare();
             Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
 
             Console.WriteLine("Från: {0} ", Inloggingsanvändarnamn);
-            
+
             Console.Write("Till: ");
             string mottagare = Console.ReadLine();
-            
+
             Console.Write("Rubrik: ");
             string rubrik = Console.ReadLine();
-           
+
             DateTime datum = DateTime.Now;
 
             Console.WriteLine("Meddelande: ");
             string text = Console.ReadLine();
+
+            
+
 
             nyttMeddelande.användarnamn = Inloggingsanvändarnamn;
             nyttMeddelande.mottagare = mottagare;
@@ -525,6 +528,82 @@ namespace MailProgram
 
             return nyameddelanden;
         }
+
+        static void SkrivUtSorteradeAnvändare() {
+
+            //Vi måste få fram alla användare i en vektor
+
+            string[] Användare = LäggAnvändareIVektor();
+
+            
+            SorteraAvändare(Användare);
+            Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
+            Console.WriteLine("Olika användare");
+            for (int i = 0; i < Användare.Length; i++ ) {
+
+               
+                Console.WriteLine(Användare[i]);
+            }
+
+        }
+
+
+        static void SorteraAvändare(string[] osorterat)
+        {
+
+
+            bool osorterad = true;
+
+            int end = osorterat.Length - 1;
+
+            while (osorterad)
+            {
+                osorterad = false;
+                for (int i = 0; i < end; i++)
+                {
+                                                             
+                   int resultat = osorterat[i].CompareTo(osorterat[i + 1]);
+                    
+                    
+                    if (resultat > 0)
+                    {
+                        Swap(osorterat, i, i + 1);
+                        osorterad = true;
+                    }
+                }
+                end--;
+            }
+           
+        }
+
+        public static void Swap(string[] osorterat, int a, int b)
+        {
+            string tmp = osorterat[a];
+            osorterat[a] = osorterat[b];
+            osorterat[b] = tmp;
+        }
+
+        static string[] LäggAnvändareIVektor() {
+
+            Console.Clear();
+            string[] rader = File.ReadAllLines("user.txt");
+            string[] konton = new string[rader.Length];
+
+            for (int i = 0; i < rader.Length; i++)
+            {
+                string[] värde = rader[i].Split('\t');
+                
+                konton[i] = värde[0];
+
+                
+
+            }
+            return konton;
+        }
+
+
+
+
         static void StartSida()
         {
             Console.WriteLine(
