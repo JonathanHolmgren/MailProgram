@@ -469,29 +469,30 @@ namespace MailProgram
             Meddelande[] gamlaMeddelandeLista = new Meddelande[antalRader];
 
               int index = 0;
-              string rad;
+
 
 
             // Denna tror jag man inte behöver
-              while ((rad = infil.ReadLine()) != null)
-              {
-                  string[] delar = rad.Split(',');
-                  if (delar.Length == 5)
-                  {
-                      Meddelande meddelande = new Meddelande();
-                      meddelande.användarnamn = delar[0]; 
-                      meddelande.mottagare = delar[1];
-                      meddelande.rubrik = delar[2];
-                      meddelande.datum = delar[3];
-                      meddelande.meddelande = delar[4];
+            /*  string rad;
+             while ((rad = infil.ReadLine()) != null)
+             {
+                 string[] delar = rad.Split(',');
+                 if (delar.Length == 5)
+                 {
+                     Meddelande meddelande = new Meddelande();
+                     meddelande.användarnamn = delar[0]; 
+                     meddelande.mottagare = delar[1];
+                     meddelande.rubrik = delar[2];
+                     meddelande.datum = delar[3];
+                     meddelande.meddelande = delar[4];
 
-                      gamlaMeddelandeLista[index] = meddelande;
-                      index++;
-                  }
-              }
+                     gamlaMeddelandeLista[index] = meddelande;
+                     index++;
+                 }
+             }*/
             infil.Close();
 
-            // Om inga konton hittades i filen, returnera en tom lista istället för null
+            // Om inga Meddelande hittades i filen, returnera en tom lista istället för null
             if (index == 0)
             {
                 return new Meddelande[0];
