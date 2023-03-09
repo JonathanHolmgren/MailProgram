@@ -28,11 +28,143 @@ namespace MailProgram
 
         static void Main(string[] args)
         {
-
             StartSida();
-            FirstMenyOption();
-            //SkrivUtSorteradeAnvändare();
+            FörstaMenyVal();
+        }
 
+        // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
+        static void FörstaMenyVal()
+        {
+            Console.Clear();
+            Console.WriteLine("Välj alternativ");
+            Console.WriteLine("\t1 : Skapa användare:");
+            Console.WriteLine("\t2 : Logga in:");
+            Console.WriteLine("\t3 : Avsluta program och spara:");
+
+            string menyval = Console.ReadLine();
+
+            switch (menyval)
+            {
+                case "1":
+                    SparaAnvändareUppgifter();
+                    Console.Clear();
+                    FörstaMenyVal();
+                    break;
+
+                case "2":
+
+                    LoggaIn();
+
+                    break;
+
+                case "3":
+                    AvslutaProgram();
+                    break;
+
+                default:
+                    Console.WriteLine("Ogiltigt val, Försök igen.");
+                    FörstaMenyVal();
+                    break;
+            }
+        }
+
+        static void InloggadMeny()
+        {
+            Console.Clear();
+            Console.WriteLine("Välkommen {0} ", Inloggingsanvändarnamn);
+            Console.WriteLine("Välj alternativ ");
+
+            Console.WriteLine("\t1 : Skriv meddelande:");
+            Console.WriteLine("\t2 : Inkorg");
+            Console.WriteLine("\t3 : Ta bort användare");
+            Console.WriteLine("\t4 : Avsluta program och spara");
+            string menyval = Console.ReadLine();
+
+            switch (menyval)
+            {
+                case "1":
+                    Console.WriteLine("Skriv meddelande");
+                    SparaMeddelande();
+                    Console.Clear();
+                    InloggadMeny();
+                    break;
+
+                case "2":
+                    InkorgMeny();
+                    break;
+
+                case "3":
+                    TaBortAnvändare();
+                    break;
+
+                case "4":
+                    AvslutaProgram();
+                    break;
+
+                default:
+                    Console.WriteLine("Ogiltigt val, Försök igen.");
+                    InloggadMeny();
+                    break;
+            }
+        }
+
+        static void InkorgMeny()
+        {
+            Console.Clear();
+            Console.WriteLine("Välj alternativ");
+
+            Console.WriteLine("\t1 : Läs meddelande:");
+            Console.WriteLine("\t2 : Ta bort meddelanden");
+            Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
+
+            string menyval = Console.ReadLine();
+
+            switch (menyval)
+            {
+                case "1":
+                    SkrivUtMeddelande();
+                    Console.WriteLine("Tryck på valfri knapp för att gå vidare!");
+                    Console.ReadKey();
+                    InloggadMeny();
+                    break;
+
+                case "2":
+                    Console.WriteLine("Meddelandet är raderat!");
+                    break;
+
+                case "3":
+                    AvslutaProgram();
+                    break;
+
+                default:
+                    Console.WriteLine("Ogiltigt val, Försök igen.");
+                    InkorgMeny();
+                    break;
+            }
+        }
+
+        static void MeddelandeMeny()
+        {
+            Console.Clear();
+            Console.WriteLine("Välj alternativ");
+            Console.WriteLine("\t1 : Skriv meddelande:");
+            Console.WriteLine("\t2 : Tillbaka till inkorg");
+
+            string menyval = Console.ReadLine();
+
+            switch (menyval)
+            {
+                case "1":
+                    SkrivUtMeddelande();
+                    break;
+                case "2":
+                    InloggadMeny();
+                    break;
+                default:
+                    Console.WriteLine("Ogiltigt val, Försök igen.");
+                    MeddelandeMeny();
+                    break;
+            }
         }
 
         static void SparaAnvändareUppgifter()
@@ -59,15 +191,18 @@ namespace MailProgram
         {
             Konto nyttKonto = new Konto();
 
+            Console.Clear();
             Console.WriteLine("Välj ett användarnamn och ett lösenord");
-            Console.Write("Användarnamn: ");
-            string användarnamn = Console.ReadLine();
-            string textpåskärm = "Lösenord: ";
-            string lösenord = Skrivlösenord(textpåskärm);
+            string rubrikAnvändarnamn = "Användarnamn: ";
+            Inloggingsanvändarnamn = CheckaTomtfält(rubrikAnvändarnamn);
+            string rubrikLösenord = "Lösenord: ";
+            string lösenord = Skrivlösenord(rubrikLösenord);
 
-            nyttKonto.användarnamn = användarnamn;
+            nyttKonto.användarnamn = Inloggingsanvändarnamn;
             nyttKonto.lösenord = lösenord;
 
+
+            Console.WriteLine("Har redan lagt till nyttkonto...");
             return nyttKonto;
         }
 
@@ -94,6 +229,7 @@ namespace MailProgram
 
             return infil;
         }
+
         static StreamReader LoadmessagesFile()
         {
             StreamReader infil = new StreamReader("meddelande.txt", Encoding.GetEncoding(28591));
@@ -123,7 +259,6 @@ namespace MailProgram
                     Console.WriteLine("Rubrik: {0}", rubrik);
                     Console.WriteLine(datum);
                 }
-
             }
             Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
         }
@@ -165,141 +300,27 @@ namespace MailProgram
             return gamlaKontoLista;
         }
 
-        // This method is the first meny choice, here you can choice to create user, choice user and cancel the program.
-        static void FirstMenyOption()
+        static void TaBortAnvändare()
         {
-            Console.WriteLine("Välj alternativ");
+            Console.WriteLine("Ta bort användare");
 
-            Console.WriteLine("\t1 : Skapa användare:");
-            Console.WriteLine("\t2 : Logga in:");
-            Console.WriteLine("\t3 : Avsluta program och spara:");
-            string menyval = Console.ReadLine();
+            int index = SökIndexPåAnvändare(Inloggingsanvändarnamn);
+            Konto[] nylista = TaBortAnvändareFrånLista(index);
 
-            if (menyval == "1")
+            StreamWriter utfil = new StreamWriter("user.txt"); // skapa fil eller öppna om den finns
+
+            foreach (Konto konto in nylista)
             {
-                SparaAnvändareUppgifter();
-                Console.Clear();
-                FirstMenyOption();
-            }
-            if (menyval == "2")
-            {
-                LoggaIn();
-            }
-            if (menyval == "3")
-            {
-                AvslutaProgram();
-            }
-            if (menyval != "1" || menyval != "2" || menyval != "3")
-            {
-                Console.WriteLine("Fel val. Försök igen!");
-                FirstMenyOption();
-            }
-        }
-
-        static void SecondMenyOption()
-        {
-            Console.Clear();
-            Console.WriteLine("Välkommen {0} ", Inloggingsanvändarnamn);
-            Console.WriteLine("Välj alternativ ");
-
-            Console.WriteLine("\t1 : Skriv meddelande:");
-            Console.WriteLine("\t2 : Inkorg");
-            Console.WriteLine("\t3 : Ta bort användare");
-            Console.WriteLine("\t4 : Avsluta program och spara");
-            string menyval = Console.ReadLine();
-
-            if (menyval == "1")
-            {
-                Console.WriteLine("Skriv meddelande");
-                SparaMeddelande();
-                Console.Clear();
-                SecondMenyOption();
-            }
-            if (menyval == "2")
-            {
-                ThirdMenyOption();
-            }
-            if (menyval == "3")
-            {
-                Console.WriteLine("Ta bort användare");
-
-                //string användare = "1";
-                //Konto[] gamlaKontolista = HämtaGamlaListan();
-                //string x = "1";
-                int index = SökIndexPåAnvändare(Inloggingsanvändarnamn);
-                Konto[] nylista = TaBortAnvändareFrånLista(index);
-                //Console.WriteLine(index);
-
-                StreamWriter utfil = new StreamWriter("user.txt"); // skapa fil eller öppna om den finns
-
-                foreach (Konto konto in nylista)
-                {
-                    utfil.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
-                }
-                /* foreach (Konto konto in nylista)
-                 {
-                     Console.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
-                 }*/
-
-                utfil.Close(); // Stänger fil
-            }
-            if (menyval == "4")
-            {
-                AvslutaProgram();
-            }
-        }
-
-        static void ThirdMenyOption()
-        {
-            Console.WriteLine("Välj alternativ");
-
-            Console.WriteLine("\t1 : Läs meddelande:");
-            Console.WriteLine("\t2 : Ta bort meddelanden");
-            Console.WriteLine("\t3 : Avsluta program och avslutaspara:");
-
-            string menyval = Console.ReadLine();
-
-            if (menyval == "1")
-            {
-                //fourthMenyOption();
-                SkrivUtMeddelande();
-                Console.WriteLine("Tryck på valfri knapp för att gå vidare!");
-                Console.ReadKey();
-                SecondMenyOption();
-            }
-            if (menyval == "2")
-            {
-                Console.WriteLine("Meddelandet är raderat!");
-            }
-            if (menyval == "3")
-            {
-                AvslutaProgram();
+                utfil.WriteLine(konto.användarnamn + "\t" + konto.lösenord);
             }
 
-        }
-
-        static void fourthMenyOption()
-        {
-            Console.WriteLine("Välj alternativ");
-
-            Console.WriteLine("\t1 : Skriv meddelande:");
-            Console.WriteLine("\t2 : Tillbaka till inkorg");
-
-            string menyval = Console.ReadLine();
-
-            if (menyval == "1")
-            {
-                Console.WriteLine("Läs meddelanden");
-            }
-            if (menyval == "2")
-            {
-                ThirdMenyOption();
-            }
+            utfil.Close(); // Stänger fil
         }
 
         //This code will cancel the program.
         static void AvslutaProgram()
         {
+            Console.Clear();
             Console.WriteLine("Är du säker på att du vill avsluta och spara programmet?");
             Console.WriteLine("J för avsluta och N för att komma till huvudmenyn.");
             string inmatning = Console.ReadLine().ToUpper();
@@ -310,7 +331,7 @@ namespace MailProgram
             }
             else if (inmatning == "N")
             {
-                FirstMenyOption();
+                FörstaMenyVal();
             }
             else
             {
@@ -322,16 +343,18 @@ namespace MailProgram
         //
         static void LoggaIn()
         {
+            Console.Clear();
             Console.WriteLine("+-+-+-+-+-");
             Console.WriteLine("Logga in: ");
             Console.WriteLine("+-+-+-+-+-");
-            Console.Write("Användarnamn: ");
-            Inloggingsanvändarnamn = Console.ReadLine();
-            Console.Write("Lösenord: ");
-            string lösenord = Console.ReadLine();
+
+            string rubrikAnvändarnamn = "Användarnamn: ";
+            string användarnamn = CheckaTomtfält(rubrikAnvändarnamn);
+            string rubrikLösenord = "Lösenord: ";
+            string lösenord = Skrivlösenord(rubrikLösenord);
 
             string[] inloggningsuppgifter = new string[2];
-            inloggningsuppgifter[0] = Inloggingsanvändarnamn;
+            inloggningsuppgifter[0] = användarnamn;
             inloggningsuppgifter[1] = lösenord;
 
             Matchaanvändarnamn(Inloggingsanvändarnamn, lösenord);
@@ -364,11 +387,15 @@ namespace MailProgram
 
             if (ok == true)
             {
-                SecondMenyOption();
+                InloggadMeny();
             }
             else if (ok == false)
             {
-                Console.WriteLine("Användarnamn finns inte listan");
+                Console.Clear();
+                Console.WriteLine("Användarnamn finns inte!");
+                Console.WriteLine("Tryck på valfri knapp");
+                Console.ReadKey();
+                FörstaMenyVal();
             }
         }
 
@@ -387,7 +414,6 @@ namespace MailProgram
                 }
             }
             return x;
-
         }
 
         static int SökIndexPåAnvändare(string användare)
@@ -440,13 +466,26 @@ namespace MailProgram
         {
             Meddelande nyttMeddelande = SkapaMeddelande();
             Meddelande[] gamlaMeddelandeLista = HämtaGamlaMListan();
-            Meddelande[] nyameddelanden = LäggMeddelandeVektor(gamlaMeddelandeLista, nyttMeddelande);
+            Meddelande[] nyameddelanden = LäggMeddelandeVektor(
+                gamlaMeddelandeLista,
+                nyttMeddelande
+            );
 
             StreamWriter utfil = new StreamWriter("meddelande.txt", true); // skapa fil eller öppna om den finns
 
             foreach (Meddelande meddelande in nyameddelanden)
             {
-                utfil.WriteLine(meddelande.användarnamn + "\t" + meddelande.mottagare + "\t" + meddelande.rubrik + "\t" + meddelande.datum + "\t" + meddelande.text);
+                utfil.WriteLine(
+                    meddelande.användarnamn
+                        + "\t"
+                        + meddelande.mottagare
+                        + "\t"
+                        + meddelande.rubrik
+                        + "\t"
+                        + meddelande.datum
+                        + "\t"
+                        + meddelande.text
+                );
             }
 
             utfil.Close(); // Stänger fil
@@ -465,18 +504,16 @@ namespace MailProgram
 
             Console.WriteLine("Från: {0} ", Inloggingsanvändarnamn);
 
-            Console.Write("Till: ");
-            string mottagare = Console.ReadLine();
+            string rubrikTill = "Till: ";
+            string mottagare = CheckaTomtfält(rubrikTill);
 
             Console.Write("Rubrik: ");
             string rubrik = Console.ReadLine();
 
             DateTime datum = DateTime.Now;
 
-            Console.WriteLine("Meddelande: ");
-            string text = Console.ReadLine();
-
-            
+            string rubrikMeddelande = "Meddelande: ";
+            string text = CheckaTomtfält(rubrikMeddelande);
 
 
             nyttMeddelande.användarnamn = Inloggingsanvändarnamn;
@@ -514,8 +551,9 @@ namespace MailProgram
         }
 
         public static Meddelande[] LäggMeddelandeVektor(
-                    Meddelande[] gamlaMeddelandeLista,
-                    Meddelande nyttMeddelande)
+            Meddelande[] gamlaMeddelandeLista,
+            Meddelande nyttMeddelande
+        )
         {
             Meddelande[] nyameddelanden = new Meddelande[gamlaMeddelandeLista.Length + 1];
 
@@ -529,29 +567,23 @@ namespace MailProgram
             return nyameddelanden;
         }
 
-        static void SkrivUtSorteradeAnvändare() {
-
+        static void SkrivUtSorteradeAnvändare()
+        {
             //Vi måste få fram alla användare i en vektor
 
             string[] Användare = LäggAnvändareIVektor();
 
-            
             SorteraAvändare(Användare);
             Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
             Console.WriteLine("Olika användare");
-            for (int i = 0; i < Användare.Length; i++ ) {
-
-               
+            for (int i = 0; i < Användare.Length; i++)
+            {
                 Console.WriteLine(Användare[i]);
             }
-
         }
-
 
         static void SorteraAvändare(string[] osorterat)
         {
-
-
             bool osorterad = true;
 
             int end = osorterat.Length - 1;
@@ -561,10 +593,8 @@ namespace MailProgram
                 osorterad = false;
                 for (int i = 0; i < end; i++)
                 {
-                                                             
-                   int resultat = osorterat[i].CompareTo(osorterat[i + 1]);
-                    
-                    
+                    int resultat = osorterat[i].CompareTo(osorterat[i + 1]);
+
                     if (resultat > 0)
                     {
                         Swap(osorterat, i, i + 1);
@@ -573,7 +603,6 @@ namespace MailProgram
                 }
                 end--;
             }
-           
         }
 
         public static void Swap(string[] osorterat, int a, int b)
@@ -583,8 +612,8 @@ namespace MailProgram
             osorterat[b] = tmp;
         }
 
-        static string[] LäggAnvändareIVektor() {
-
+        static string[] LäggAnvändareIVektor()
+        {
             Console.Clear();
             string[] rader = File.ReadAllLines("user.txt");
             string[] konton = new string[rader.Length];
@@ -592,17 +621,11 @@ namespace MailProgram
             for (int i = 0; i < rader.Length; i++)
             {
                 string[] värde = rader[i].Split('\t');
-                
+
                 konton[i] = värde[0];
-
-                
-
             }
             return konton;
         }
-
-
-
 
         static void StartSida()
         {
@@ -632,11 +655,10 @@ namespace MailProgram
                         |__>            || ||      || ||
 
 
-     hit any key to continue"
+     Slå på valfri knapp för att fortsätta"
             );
 
             Console.ReadKey();
-            Console.Clear();
         }
 
         static string Skrivlösenord(string textpåskräm)
@@ -666,10 +688,12 @@ namespace MailProgram
                         {
                             if (string.IsNullOrWhiteSpace(valtlösenord))
                             {
-                                Console.WriteLine("");
-                                Console.WriteLine("Fältet kan ej vara tomt!");
-                                Skrivlösenord(textpåskräm);
-                                break;
+                                Console.Clear();
+                                Console.WriteLine("Fältet kan ej vara tomt, försök igen!");
+                                Console.WriteLine("Användarnamn: {0}",Inloggingsanvändarnamn);
+                                string andraText = Skrivlösenord(textpåskräm);
+                                return andraText;
+                                    //break;
                             }
                             else
                             {
@@ -680,6 +704,68 @@ namespace MailProgram
                     }
                 } while (true);
                 return valtlösenord;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /*static string Skrivanvändarnamn(string textpåskräm)
+        {
+            string användarnamn = "";
+            try
+            {
+                Console.Write(textpåskräm);
+
+                do
+                {
+                    användarnamn = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(användarnamn))
+                    {
+                        Console.WriteLine("Fältet kan ej vara tomt!");
+                        Skrivanvändarnamn(textpåskräm);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (true);
+                return användarnamn;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }*/
+        static string CheckaTomtfält(string textpåskräm)
+        {
+            string text = "";
+            try
+            {
+                Console.Write(textpåskräm);
+
+                do
+                {
+                    text = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Fältet kan ej vara tomt, försök igen!");
+                       
+                       string andratext = CheckaTomtfält(textpåskräm);
+                       return andratext;
+                        //break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (true);
+                return text;
             }
             catch (Exception ex)
             {
