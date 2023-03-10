@@ -291,13 +291,35 @@ namespace MailProgram
             Console.WriteLine("Välj ett användarnamn och ett lösenord");
             string rubrikAnvändarnamn = "Användarnamn: ";
             string användarnamn = CheckaTomtfält(rubrikAnvändarnamn);
+            bool finnsAnvändare = KollaOmAnvändareRedanFinns(användarnamn);
             string rubrikLösenord = "Lösenord: ";
             string lösenord = Skrivlösenord(rubrikLösenord);
 
-            nyttKonto.användarnamn = användarnamn;
-            nyttKonto.lösenord = lösenord;
 
-            Console.WriteLine("Har redan lagt till nyttkonto...");
+
+            if (finnsAnvändare == false)
+            {
+                nyttKonto.användarnamn = användarnamn;
+                nyttKonto.lösenord = lösenord;
+            }
+            else {
+                Console.Clear();
+                Console.WriteLine("Användarnamn finns redan, testa nytt!");
+                Console.WriteLine("Tryck på valfri knapp");
+                Console.ReadKey();
+              nyttKonto = SkapaAnvändare();
+            }
+
+           
+
+            /* else if (finnsAnvändare == false)
+             {
+                 nyttKonto.användarnamn = användarnamn;
+                 nyttKonto.lösenord = lösenord;
+
+             }*/
+
+
             return nyttKonto;
         }
 
@@ -317,17 +339,45 @@ namespace MailProgram
 
             return nyaAnvändarkonton;
         }
-       
-        
-
-        // *************************************** HÄR SLUTAR SEKTIONEN SKAPA ANVÄNDARE  *********************
-        //****************************************************************************************************
 
 
-        // *************************************   HÄR BÖRJAR SEKTIONEN LOGGA IN   ***************************
-        //****************************************************************************************************
+        //*******************************************
 
-        static void LoggaIn()
+        static bool KollaOmAnvändareRedanFinns(string användarnamn)
+        {
+            string[] rader = File.ReadAllLines("user.txt");
+            Konto[] lista = new Konto[rader.Length];
+            bool finnsAnvändare = false;
+
+            for (int i = 0; i < rader.Length; i++)
+            {
+                string[] värde = rader[i].Split('\t');
+                Konto konto = new Konto();
+                konto.användarnamn = värde[0];
+                lista[i] = konto;
+            }
+
+            for (int i = 0; i < lista.Length; i++)
+            {
+                if (lista[i].användarnamn == användarnamn)
+                {
+                    finnsAnvändare = true;
+                    break;
+                }
+
+            }
+            return finnsAnvändare;
+
+        }
+
+            // *************************************** HÄR SLUTAR SEKTIONEN SKAPA ANVÄNDARE  *********************
+            //****************************************************************************************************
+
+
+            // *************************************   HÄR BÖRJAR SEKTIONEN LOGGA IN   ***************************
+            //****************************************************************************************************
+
+            static void LoggaIn()
         {
             Console.Clear();
             Console.WriteLine("+-+-+-+-+-");
