@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
@@ -169,7 +170,7 @@ namespace MailProgram
 
         static void SparaAnvändareUppgifter()
         {
-            Konto nyttkonto = CreateUser();
+            Konto nyttkonto = SkapaAnvändare();
             Konto[] gamlaKontoLista = HämtaGamlaListan();
             Konto[] nyaAnvändarkonton = LäggAnvändareUppgifterVektor(gamlaKontoLista, nyttkonto);
 
@@ -187,24 +188,25 @@ namespace MailProgram
         }
 
         // Denna metod är till för att skapa en användare och sätta ett lösen till den.
-        static Konto CreateUser()
+        static Konto SkapaAnvändare()
         {
             Konto nyttKonto = new Konto();
 
             Console.Clear();
             Console.WriteLine("Välj ett användarnamn och ett lösenord");
             string rubrikAnvändarnamn = "Användarnamn: ";
-            Inloggingsanvändarnamn = CheckaTomtfält(rubrikAnvändarnamn);
+            string användarnamn = CheckaTomtfält(rubrikAnvändarnamn);
             string rubrikLösenord = "Lösenord: ";
             string lösenord = Skrivlösenord(rubrikLösenord);
 
-            nyttKonto.användarnamn = Inloggingsanvändarnamn;
+            nyttKonto.användarnamn = användarnamn;
             nyttKonto.lösenord = lösenord;
 
 
             Console.WriteLine("Har redan lagt till nyttkonto...");
             return nyttKonto;
         }
+
 
         public static Konto[] LäggAnvändareUppgifterVektor(
             Konto[] gamlaAnvändarkonton,
@@ -250,14 +252,17 @@ namespace MailProgram
                 string avsändare = värde[0];
                 string mottagare = värde[1];
                 string rubrik = värde[2];
-                string datum = värde[3];
+               // string datum = värde[3];
+
+                DateTime datum = DateTime.ParseExact(värde[3], "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+               string datumUtanSekunder = datum.ToString("yyyy-MM-dd HH:mm");
 
                 if (Inloggingsanvändarnamn == mottagare)
                 {
                     Console.WriteLine("----------------------");
                     Console.WriteLine("Avsändare: {0}", avsändare);
                     Console.WriteLine("Rubrik: {0}", rubrik);
-                    Console.WriteLine(datum);
+                    Console.WriteLine("Datum: {0}", datumUtanSekunder);
                 }
             }
             Console.WriteLine("+-+-+-+-+-+-+-+-+-+-+-");
@@ -349,13 +354,9 @@ namespace MailProgram
             Console.WriteLine("+-+-+-+-+-");
 
             string rubrikAnvändarnamn = "Användarnamn: ";
-            string användarnamn = CheckaTomtfält(rubrikAnvändarnamn);
+             Inloggingsanvändarnamn = CheckaTomtfält(rubrikAnvändarnamn);
             string rubrikLösenord = "Lösenord: ";
             string lösenord = Skrivlösenord(rubrikLösenord);
-
-            string[] inloggningsuppgifter = new string[2];
-            inloggningsuppgifter[0] = användarnamn;
-            inloggningsuppgifter[1] = lösenord;
 
             Matchaanvändarnamn(Inloggingsanvändarnamn, lösenord);
         }
@@ -384,6 +385,8 @@ namespace MailProgram
             }
 
             bool ok = Kollaanvändare(lista, användarnamn, lösenord);
+
+
 
             if (ok == true)
             {
